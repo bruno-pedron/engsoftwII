@@ -12,9 +12,11 @@ ${TEXTO_PAG_LOGIN}    //h3[contains(.,'Secretaria On-line do SEPT - Login')]
 ${TEXTO_PAG_INICIAL}  //h2[contains(.,'Solicitações')]
 ${GRR_ALUNO}          GRR11111111  
 ${SENHA_ALUNO}        123
+${LOGIN_SECRETARIA}   rafaela.fontana@ufpr.br
+${SENHA_SECRETARIA}   123
 ${TEXTO_BASE}         Esse é um texto utilizado para teste das solicitações da Secretaria On-line. Criado em
-${ID_SOLICITACAO_CRIADA}    
 ${LOCATOR_CONSULTAR}   //a[@href='consultarSolicitacao?origem=home&id=XXXXX'][contains(.,'Consultar')]
+${LOCATOR_DELIBERAR}   //a[@href='deliberarSolicitacao?idSolicitacao=XXXXX'][contains(.,'Deliberar')]
 
 *** Keywords ***
 Abrir o Navegador
@@ -29,6 +31,11 @@ Acessar secretaria on-line como ALUNO
     Go To    ${URL}
     Wait Until Element Is Visible     ${TEXTO_PAG_LOGIN}
     Logar com "${GRR_ALUNO}" "${SENHA_ALUNO}"
+
+Acessar secretaria on-line como SECRETARIA
+    Go To    ${URL}
+    Wait Until Element Is Visible     ${TEXTO_PAG_LOGIN}
+    Logar com "${LOGIN_SECRETARIA}" "${SENHA_SECRETARIA}"
 
 Logar com "${USUARIO}" "${SENHA}"
     #Insere e-mail e senha de acesso válidos e clica no botão submeter
@@ -60,6 +67,7 @@ Clicar em "Salvar"
 
 Deslogar
     Click Element    (//a[@href='logarUsuarioSair1'][contains(.,'Sair')])[2]
+    
 
 Pega Id da ${URL}
     ${STR_TMP}    Fetch From Left    ${URL}    &descricao
@@ -76,3 +84,26 @@ Localizar solicitação criada
     ${LOCATOR}    Replace String    ${LOCATOR_CONSULTAR}    XXXXX    ${ID_SOLICITACAO_CRIADA}
     Log    ${LOCATOR}
     Wait Until Element Is Visible    ${LOCATOR}
+
+Localizar a solicitação do aluno e clicar em "Deliberar"
+    ${LOCATOR}    Replace String    ${LOCATOR_DELIBERAR}    XXXXX    ${ID_SOLICITACAO_CRIADA}
+    Log    ${LOCATOR}
+    Click Element   ${LOCATOR}
+
+Preencher os campos, finalizando a solicitação
+    ${DATA_ATUAL}    Get Current Date
+    ${TEXTO_DELIBERACAO}    Catenate    Deliberado em    ${DATA_ATUAL}
+    Input Text    descricaoDeliberacao    ${TEXTO_DELIBERACAO}
+    Select From List By Label    finalizar    Sim
+
+Clicar em "Salvar Deliberação"
+    Click Button    submit
+    Wait Until Element Is Visible    //h2[contains(.,'Solicitações')]
+    Deslogar
+
+A solicitação deve aparecer como "Concluída" para o aluno
+    Acessar secretaria on-line como ALUNO
+    ${LOCATOR}    Replace String    ${LOCATOR_CONSULTAR}    XXXXX    ${ID_SOLICITACAO_CRIADA}
+    Click Element    ${LOCATOR}
+    Page Should Contain    Concluida
+    Deslogar
