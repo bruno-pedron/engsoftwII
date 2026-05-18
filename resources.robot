@@ -67,7 +67,7 @@ Clicar em "Salvar"
 
 Deslogar
     Click Element    (//a[@href='logarUsuarioSair1'][contains(.,'Sair')])[2]
-    
+
 
 Pega Id da ${URL}
     ${STR_TMP}    Fetch From Left    ${URL}    &descricao
@@ -107,3 +107,8 @@ A solicitação deve aparecer como "Concluída" para o aluno
     Click Element    ${LOCATOR}
     Page Should Contain    Concluida
     Deslogar
+
+#### GHERKIN
+
+O aluno está logado na Secretaria On-line
+    Acessar secretaria on-line como ALUNO
