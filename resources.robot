@@ -2,6 +2,8 @@
 Documentation     Implementação das keywords dos casos de uso de teste da Secretaria On-line
 
 Library     SeleniumLibrary
+Library     DateTime
+Library     String
 
 *** Variables ***
 ${BROWSER}            chrome
@@ -10,6 +12,9 @@ ${TEXTO_PAG_LOGIN}    //h3[contains(.,'Secretaria On-line do SEPT - Login')]
 ${TEXTO_PAG_INICIAL}  //h2[contains(.,'Solicitações')]
 ${GRR_ALUNO}          GRR11111111  
 ${SENHA_ALUNO}        123
+${TEXTO_BASE}         Esse é um texto utilizado para teste das solicitações da Secretaria On-line. Criado em
+${ID_SOLICITACAO_CRIADA}    
+${LOCATOR_CONSULTAR}   //a[@href='consultarSolicitacao?origem=home&id=XXXXX'][contains(.,'Consultar')]
 
 *** Keywords ***
 Abrir o Navegador
@@ -22,7 +27,7 @@ Fechar o Navegador
 
 Acessar secretaria on-line como ALUNO
     Go To    ${URL}
-    Waint Until Element Is Visible     ${TEXTO_PAG_LOGIN}
+    Wait Until Element Is Visible     ${TEXTO_PAG_LOGIN}
     Logar com "${GRR_ALUNO}" "${SENHA_ALUNO}"
 
 Logar com "${USUARIO}" "${SENHA}"
@@ -39,3 +44,35 @@ Clicar em "Abrir Nova Solicitação"
     Wait Until Element Is Visible   //h3[contains(.,'Nova Solicitação')]
 
 Selecionar o tipo de solicitação "Requerimento Geral"
+    Select From List By Label    //select[contains(@name,'idTipoSolicitacao')]    Requerimento Geral
+    Click Button    submit
+
+Preencher o campo da solicitação - sem arquivo
+    ${DATA_ATUAL}    Get Current Date
+    ${TEXTO_SOLICITACAO}    Catenate    ${TEXTO_BASE}    ${DATA_ATUAL}
+    Input Text    descricao    ${TEXTO_SOLICITACAO}
+
+Clicar em "Salvar"
+    Click Button    submit
+    ${URL}    Get Location
+    Pega Id da ${URL}
+    Deslogar
+
+Deslogar
+    Click Element    (//a[@href='logarUsuarioSair1'][contains(.,'Sair')])[2]
+
+Pega Id da ${URL}
+    ${STR_TMP}    Fetch From Left    ${URL}    &descricao
+    ${STR_TMP}    Fetch From Right    ${STR_TMP}    ?id=
+    Set Suite Variable    ${ID_SOLICITACAO_CRIADA}    ${STR_TMP}
+    Log    ${ID_SOLICITACAO_CRIADA}
+
+A solicitação criada deve aparecer na lista de solicitações do aluno
+    Acessar secretaria on-line como ALUNO
+    Localizar solicitação criada
+    Deslogar
+    
+Localizar solicitação criada
+    ${LOCATOR}    Replace String    ${LOCATOR_CONSULTAR}    XXXXX    ${ID_SOLICITACAO_CRIADA}
+    Log    ${LOCATOR}
+    Wait Until Element Is Visible    ${LOCATOR}
