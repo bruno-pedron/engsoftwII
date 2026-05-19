@@ -14,3 +14,11 @@ Caso de Teste 1: Realizar um requerimento geral como aluno
     Preencher o campo da solicitação - sem arquivo
     Clicar em "Salvar"
     A solicitação criada deve aparecer na lista de solicitações do aluno
+
+Caso de Teste 2: Deliberar requerimento geral como secretaria
+    [Tags]    secretaria    deliberacao
+    Acessar secretaria on-line como SECRETARIA
+    Localizar a solicitação do aluno e clicar em "Deliberar"
+    Preencher os campos, finalizando a solicitação
+    Clicar em "Salvar Deliberação"
+    A solicitação deve aparecer como "Concluída" para o aluno
